@@ -18,13 +18,14 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 // 仮モデルの追加
+let car; // グローバル変数として宣言
 const loader = new GLTFLoader();
 
 loader.load(
     "models/cap.glb",
 
     function (gltf) {
-        const car = gltf.scene;
+        car = gltf.scene;
 
         car.scale.set(1, 1, 1);
         car.position.set(0, 0, 0);
@@ -43,7 +44,9 @@ loader.load(
 function animate() {
     requestAnimationFrame(animate);
 
-    car.rotation.y += 0.01;
+    if (car) {
+        car.rotation.y += 0.01;
+    }
 
     renderer.render(scene, camera);
 }
