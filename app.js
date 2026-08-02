@@ -1,3 +1,6 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 // Three.jsの基本的なセットアップ
 const scene = new THREE.Scene();
 
@@ -15,7 +18,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 // 仮モデルの追加
-const loader = new THREE.GLTFLoader();
+const loader = new GLTFLoader();
 
 loader.load(
     "models/cap.glb",
