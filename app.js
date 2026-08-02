@@ -2,11 +2,15 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+
 console.log("app.js start");
 console.log("Three.js revision:", THREE.REVISION);
 
 
-// シーン
+// --------------------
+// Scene
+// --------------------
+
 const scene = new THREE.Scene();
 
 scene.background = new THREE.Color(
@@ -14,7 +18,10 @@ scene.background = new THREE.Color(
 );
 
 
-// カメラ
+// --------------------
+// Camera
+// --------------------
+
 const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -22,11 +29,13 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
+
 camera.position.set(
     0,
     2,
     5
 );
+
 
 camera.lookAt(
     0,
@@ -34,33 +43,47 @@ camera.lookAt(
     0
 );
 
+
 window.camera = camera;
 
 
-// レンダラー
+
+// --------------------
+// Renderer
+// --------------------
+
 const renderer = new THREE.WebGLRenderer({
     antialias:true
 });
+
 
 renderer.setSize(
     window.innerWidth,
     window.innerHeight
 );
 
+
 renderer.shadowMap.enabled = true;
+
 
 document.body.appendChild(
     renderer.domElement
 );
 
 
+
+// --------------------
 // OrbitControls
+// --------------------
+
 const controls = new OrbitControls(
     camera,
     renderer.domElement
 );
 
+
 controls.enableDamping = true;
+
 
 controls.target.set(
     0,
@@ -68,18 +91,23 @@ controls.target.set(
     0
 );
 
+
 controls.minDistance = 2;
 controls.maxDistance = 10;
 
 controls.enablePan = false;
 
+
 controls.update();
+
 
 window.controls = controls;
 
 
+
+
 // --------------------
-// 地面
+// Floor
 // --------------------
 
 const floor = new THREE.Mesh(
@@ -92,9 +120,13 @@ const floor = new THREE.Mesh(
     })
 );
 
-floor.rotation.x = -Math.PI/2;
+
+floor.rotation.x =
+    -Math.PI / 2;
+
 
 floor.receiveShadow = true;
+
 
 scene.add(
     floor
@@ -102,8 +134,9 @@ scene.add(
 
 
 
+
 // --------------------
-// ライト
+// Light
 // --------------------
 
 scene.add(
@@ -114,11 +147,13 @@ scene.add(
 );
 
 
-// カメラ固定ライト
-const cameraLight = new THREE.DirectionalLight(
+
+const cameraLight =
+new THREE.DirectionalLight(
     0xffffff,
     3
 );
+
 
 cameraLight.position.set(
     0,
@@ -126,22 +161,28 @@ cameraLight.position.set(
     5
 );
 
+
 cameraLight.castShadow = true;
+
 
 camera.add(
     cameraLight
 );
+
 
 scene.add(
     camera
 );
 
 
-// 補助ライト
-const fillLight = new THREE.DirectionalLight(
+
+
+const fillLight =
+new THREE.DirectionalLight(
     0xffffff,
     0.8
 );
+
 
 fillLight.position.set(
     -5,
@@ -149,25 +190,30 @@ fillLight.position.set(
     -5
 );
 
+
 scene.add(
     fillLight
 );
 
 
 
+
 // --------------------
-// 車
+// Car
 // --------------------
 
 let car = null;
 
+
 window.car = null;
+
 
 
 let tyreLF = null;
 let tyreRF = null;
 let tyreLR = null;
 let tyreRR = null;
+
 
 
 window.tyreLF = null;
@@ -177,7 +223,10 @@ window.tyreRR = null;
 
 
 
-// 基準値保存
+
+
+// 基準値
+
 let base = {
 
     LF:null,
@@ -189,22 +238,60 @@ let base = {
 
 
 
+// 回転基準
+
+let baseRotation = {
+
+    LF:null,
+    RF:null,
+    LR:null,
+    RR:null
+
+};
+
+
+
+// キャンバー軸設定
+// 必要ならここだけ変更
+
+const camberAxis = {
+
+    LF:"z",
+    RF:"z",
+    LR:"z",
+    RR:"z"
+
+};
+
+
+
+
+
 const loader = new GLTFLoader();
+
 
 
 loader.load(
 
     "./models/cap.glb",
 
+
     (gltf)=>{
 
 
-        console.log("SUCCESS");
+        console.log(
+            "SUCCESS"
+        );
+
 
 
         car = gltf.scene;
 
-        scene.add(car);
+
+        scene.add(
+            car
+        );
+
 
         window.car = car;
 
@@ -213,39 +300,46 @@ loader.load(
         car.traverse(
             (child)=>{
 
+
                 console.log(
                     child.name,
                     child.type
                 );
 
 
+
                 if(child.isMesh){
 
-                    child.castShadow=true;
+                    child.castShadow = true;
 
                 }
+
 
             }
         );
 
 
 
-        tyreLF = car.getObjectByName(
+        tyreLF =
+        car.getObjectByName(
             "TYRE_LF"
         );
 
 
-        tyreRF = car.getObjectByName(
+        tyreRF =
+        car.getObjectByName(
             "TYRE_RF"
         );
 
 
-        tyreLR = car.getObjectByName(
+        tyreLR =
+        car.getObjectByName(
             "TYRE_LR"
         );
 
 
-        tyreRR = car.getObjectByName(
+        tyreRR =
+        car.getObjectByName(
             "TYRE_RR"
         );
 
@@ -258,10 +352,32 @@ loader.load(
 
 
 
-        base.LF = tyreLF.position.clone();
-        base.RF = tyreRF.position.clone();
-        base.LR = tyreLR.position.clone();
-        base.RR = tyreRR.position.clone();
+        base.LF =
+        tyreLF.position.clone();
+
+        base.RF =
+        tyreRF.position.clone();
+
+        base.LR =
+        tyreLR.position.clone();
+
+        base.RR =
+        tyreRR.position.clone();
+
+
+
+
+        baseRotation.LF =
+        tyreLF.rotation.clone();
+
+        baseRotation.RF =
+        tyreRF.rotation.clone();
+
+        baseRotation.LR =
+        tyreLR.rotation.clone();
+
+        baseRotation.RR =
+        tyreRR.rotation.clone();
 
 
 
@@ -275,22 +391,29 @@ loader.load(
 
 
 
-        const box = new THREE.Box3()
-            .setFromObject(car);
+        const box =
+        new THREE.Box3()
+        .setFromObject(car);
 
 
-        const center = box.getCenter(
+
+        const center =
+        box.getCenter(
             new THREE.Vector3()
         );
 
 
-        controls.target.copy(center);
+        controls.target.copy(
+            center
+        );
+
 
         controls.update();
 
 
 
         createUI();
+
 
 
     },
@@ -316,28 +439,46 @@ loader.load(
 function createUI(){
 
 
-    const panel = document.createElement(
+    const panel =
+    document.createElement(
         "div"
     );
 
 
-    panel.style.position="fixed";
-    panel.style.right="10px";
-    panel.style.top="10px";
-    panel.style.padding="10px";
-    panel.style.background="rgba(0,0,0,0.5)";
-    panel.style.color="white";
-    panel.style.fontFamily="sans-serif";
-    panel.style.fontSize="14px";
+    panel.style.position =
+        "fixed";
+
+    panel.style.right =
+        "10px";
+
+    panel.style.top =
+        "10px";
+
+    panel.style.padding =
+        "10px";
+
+    panel.style.background =
+        "rgba(0,0,0,0.5)";
+
+    panel.style.color =
+        "white";
+
+    panel.style.fontFamily =
+        "sans-serif";
+
+    panel.style.fontSize =
+        "14px";
 
 
-    panel.innerHTML=`
+
+    panel.innerHTML = `
+
 
     <div>
     Front Track
     <input id="frontTrack"
     type="range"
-    min="0"
+    min="-0.2"
     max="0.5"
     step="0.01"
     value="0">
@@ -348,11 +489,12 @@ function createUI(){
     Rear Track
     <input id="rearTrack"
     type="range"
-    min="0"
+    min="-0.2"
     max="0.5"
     step="0.01"
     value="0">
     </div>
+
 
 
     <div>
@@ -366,6 +508,7 @@ function createUI(){
     </div>
 
 
+
     <div>
     Rear Camber
     <input id="rearCamber"
@@ -375,6 +518,7 @@ function createUI(){
     step="0.01"
     value="0">
     </div>
+
 
 
     <div>
@@ -387,7 +531,9 @@ function createUI(){
     value="0">
     </div>
 
+
     `;
+
 
 
     document.body.appendChild(
@@ -396,139 +542,215 @@ function createUI(){
 
 
 
+
+
     // --------------------
-    // トレッド幅
+    // Track
     // --------------------
 
 
     document.getElementById(
         "frontTrack"
-    ).oninput=(e)=>{
+    ).oninput = (e)=>{
 
 
-        let v = Number(
+        const v =
+        Number(
             e.target.value
         );
 
 
         tyreLF.position.x =
-            base.LF.x + v;
+        base.LF.x + v;
 
 
         tyreRF.position.x =
-            base.RF.x - v;
+        base.RF.x - v;
 
 
     };
+
+
 
 
 
     document.getElementById(
         "rearTrack"
-    ).oninput=(e)=>{
+    ).oninput = (e)=>{
 
 
-        let v = Number(
+        const v =
+        Number(
             e.target.value
         );
 
 
+
         tyreLR.position.x =
-            base.LR.x + v;
+        base.LR.x + v;
 
 
         tyreRR.position.x =
-            base.RR.x - v;
+        base.RR.x - v;
 
 
     };
 
 
 
+
+
+
+
     // --------------------
-    // キャンバー
+    // Camber
     // --------------------
 
 
     document.getElementById(
         "frontCamber"
-    ).oninput=(e)=>{
+    ).oninput = (e)=>{
 
 
-        let v = Number(
+        const v =
+        Number(
             e.target.value
         );
 
 
-        tyreLF.rotation.z =
-            v;
+        setCamber(
+            tyreLF,
+            "LF",
+            v
+        );
 
 
-        tyreRF.rotation.z =
-            -v;
+        setCamber(
+            tyreRF,
+            "RF",
+            -v
+        );
 
 
     };
+
+
 
 
 
     document.getElementById(
         "rearCamber"
-    ).oninput=(e)=>{
+    ).oninput = (e)=>{
 
 
-        let v = Number(
+        const v =
+        Number(
             e.target.value
         );
 
 
-        tyreLR.rotation.z =
-            v;
+
+        setCamber(
+            tyreLR,
+            "LR",
+            v
+        );
 
 
-        tyreRR.rotation.z =
-            -v;
+        setCamber(
+            tyreRR,
+            "RR",
+            -v
+        );
 
 
     };
 
 
 
+
+
+
     // --------------------
-    // 車高
+    // Ride Height
     // --------------------
 
 
     document.getElementById(
         "rideHeight"
-    ).oninput=(e)=>{
+    ).oninput = (e)=>{
 
 
-        let v = Number(
+        const v =
+        Number(
             e.target.value
         );
 
 
+
         tyreLF.position.y =
-            base.LF.y + v;
+        base.LF.y + v;
 
 
         tyreRF.position.y =
-            base.RF.y + v;
+        base.RF.y + v;
 
 
         tyreLR.position.y =
-            base.LR.y + v;
+        base.LR.y + v;
 
 
         tyreRR.position.y =
-            base.RR.y + v;
+        base.RR.y + v;
 
 
     };
 
 
 }
+
+
+
+
+
+// --------------------
+// Camber function
+// --------------------
+
+function setCamber(
+    tyre,
+    name,
+    value
+){
+
+
+    if(!tyre){
+        return;
+    }
+
+
+
+    // 一旦基準へ戻す
+
+    tyre.rotation.copy(
+        baseRotation[name]
+    );
+
+
+
+    const axis =
+    camberAxis[name];
+
+
+
+    tyre.rotation[axis] +=
+        value;
+
+
+}
+
+
+
 
 
 
@@ -547,10 +769,12 @@ function animate(){
     controls.update();
 
 
+
     renderer.render(
         scene,
         camera
     );
+
 
 }
 
@@ -559,28 +783,31 @@ animate();
 
 
 
+
+
 // --------------------
 // Resize
 // --------------------
 
 window.addEventListener(
-"resize",
-()=>{
+    "resize",
+    ()=>{
 
 
-    camera.aspect =
+        camera.aspect =
         window.innerWidth /
         window.innerHeight;
 
 
-    camera.updateProjectionMatrix();
+        camera.updateProjectionMatrix();
 
 
 
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
 
 
-});
+    }
+);
