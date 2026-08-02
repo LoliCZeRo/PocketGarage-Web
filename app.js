@@ -85,6 +85,7 @@ let car = null;
 
 const loader = new GLTFLoader();
 
+console.log("before glb load");
 
 loader.load(
     "models/cap.glb",
