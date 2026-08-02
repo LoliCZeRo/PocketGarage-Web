@@ -15,10 +15,26 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 // 仮モデルの追加
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-const car = new THREE.Mesh(geometry, material);
-scene.add(car);
+const loader = new THREE.GLTFLoader();
+
+loader.load(
+    "models/cap.glb",
+
+    function (gltf) {
+        const car = gltf.scene;
+
+        car.scale.set(1, 1, 1);
+        car.position.set(0, 0, 0);
+
+        scene.add(car);
+    },
+
+    undefined,
+
+    function (error) {
+        console.error(error);
+    }
+);
 
 // アニメーションループ
 function animate() {
