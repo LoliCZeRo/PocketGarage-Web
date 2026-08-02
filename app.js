@@ -4,14 +4,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 console.log("app.js start");
 console.log("Three.js revision:", THREE.REVISION);
-console.log("GLTFLoader:", GLTFLoader);
 
 
 // シーン
 const scene = new THREE.Scene();
 
 scene.background = new THREE.Color(
-    0x202020
+    0x303030
 );
 
 
@@ -48,6 +47,8 @@ renderer.setSize(
     window.innerHeight
 );
 
+renderer.shadowMap.enabled = true;
+
 document.body.appendChild(
     renderer.domElement
 );
@@ -77,58 +78,101 @@ controls.update();
 window.controls = controls;
 
 
+// --------------------
+// 背景・地面
+// --------------------
+
+// 地面
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(
+        20,
+        20
+    ),
+    new THREE.MeshStandardMaterial({
+        color: 0x202020
+    })
+);
+
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = 0;
+
+floor.receiveShadow = true;
+
+scene.add(
+    floor
+);
+
+
+// --------------------
 // ライト
+// --------------------
+
+// 環境光
 scene.add(
     new THREE.AmbientLight(
         0xffffff,
-        2
+        1.5
     )
 );
 
 
-const light = new THREE.DirectionalLight(
+// カメラ固定ライト
+const cameraLight = new THREE.DirectionalLight(
     0xffffff,
-    3
+    2.5
 );
 
-light.position.set(
-    5,
-    5,
+cameraLight.position.set(
+    0,
+    0,
     5
 );
 
-scene.add(light);
+cameraLight.castShadow = true;
 
 
-// デバッグ表示
-scene.add(
-    new THREE.GridHelper(
-        10,
-        10
-    )
+// カメラの子にする
+camera.add(
+    cameraLight
 );
 
 scene.add(
-    new THREE.AxesHelper(
-        5
-    )
+    camera
 );
 
 
+// 補助ライト（弱い固定光）
+const fillLight = new THREE.DirectionalLight(
+    0xffffff,
+    0.5
+);
+
+fillLight.position.set(
+    -5,
+    5,
+    -5
+);
+
+scene.add(
+    fillLight
+);
+
+
+// --------------------
 // 車
+// --------------------
+
 let car = null;
 
 window.car = null;
 
 
-// タイヤ
 let tyreLF = null;
 let tyreRF = null;
 let tyreLR = null;
 let tyreRR = null;
 
 
-// Console用
 window.tyreLF = null;
 window.tyreRF = null;
 window.tyreLR = null;
@@ -136,6 +180,7 @@ window.tyreRR = null;
 
 
 const loader = new GLTFLoader();
+
 
 console.log(
     "before loader.load"
@@ -164,26 +209,24 @@ loader.load(
         window.car = car;
 
 
-        console.log(
-            "car:",
-            car
-        );
-
-
-        // オブジェクト一覧
         car.traverse(
-            (child) => {
+            (child)=>{
 
                 console.log(
                     child.name,
                     child.type
                 );
 
+                if(child.isMesh){
+
+                    child.castShadow = true;
+
+                }
+
             }
         );
 
 
-        // タイヤ取得
         tyreLF = car.getObjectByName(
             "TYRE_LF"
         );
@@ -207,6 +250,22 @@ loader.load(
         window.tyreRR = tyreRR;
 
 
+        const box = new THREE.Box3()
+            .setFromObject(car);
+
+
+        const center = box.getCenter(
+            new THREE.Vector3()
+        );
+
+
+        controls.target.copy(
+            center
+        );
+
+        controls.update();
+
+
         console.log(
             "TYRES:",
             tyreLF,
@@ -215,25 +274,10 @@ loader.load(
             tyreRR
         );
 
-
-        // モデル中心へ注視点調整
-        const box = new THREE.Box3()
-            .setFromObject(car);
-
-        const center = box.getCenter(
-            new THREE.Vector3()
-        );
-
-        controls.target.copy(
-            center
-        );
-
-        controls.update();
-
     },
 
 
-    (xhr) => {
+    (xhr)=>{
 
         console.log(
             `progress ${xhr.loaded}/${xhr.total}`
@@ -242,13 +286,10 @@ loader.load(
     },
 
 
-    (error) => {
+    (error)=>{
 
         console.error(
-            "ERROR"
-        );
-
-        console.error(
+            "ERROR",
             error
         );
 
@@ -258,7 +299,8 @@ loader.load(
 
 
 
-function animate() {
+// アニメーション
+function animate(){
 
     requestAnimationFrame(
         animate
@@ -280,9 +322,10 @@ animate();
 
 
 
+// リサイズ
 window.addEventListener(
     "resize",
-    () => {
+    ()=>{
 
         camera.aspect =
             window.innerWidth /
