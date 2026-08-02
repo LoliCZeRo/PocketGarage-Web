@@ -27,7 +27,7 @@ loader.load(
     function (gltf) {
         car = gltf.scene;
 
-        car.scale.set(1, 1, 1);
+        car.scale.set(0.01, 0.01, 0.01);
         car.position.set(0, 0, 0);
 
         scene.add(car);
