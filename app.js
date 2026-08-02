@@ -2,13 +2,12 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 console.log("app.js start");
-
+console.log("Three.js revision:", THREE.REVISION);
+console.log("GLTFLoader:", GLTFLoader);
 
 // シーン
 const scene = new THREE.Scene();
-
 scene.background = new THREE.Color(0x202020);
-
 
 // カメラ
 const camera = new THREE.PerspectiveCamera(
@@ -18,221 +17,90 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.set(0, 3, 15);
-camera.lookAt(0, 0, 0);
-
-
-// Console操作用
-window.camera = camera;
-
+camera.position.set(0, 2, 5);
 
 // レンダラー
 const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
 
-renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-);
-
+renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// ライト
+scene.add(new THREE.AmbientLight(0xffffff, 2));
 
-// 環境光
-const ambientLight = new THREE.AmbientLight(
-    0xffffff,
-    1
-);
+const light = new THREE.DirectionalLight(0xffffff, 3);
+light.position.set(5, 5, 5);
+scene.add(light);
 
-scene.add(ambientLight);
+// デバッグ表示
+scene.add(new THREE.GridHelper(10, 10));
+scene.add(new THREE.AxesHelper(5));
 
-
-// 指向性ライト
-const directionalLight = new THREE.DirectionalLight(
-    0xffffff,
-    3
-);
-
-directionalLight.position.set(
-    5,
-    10,
-    5
-);
-
-scene.add(directionalLight);
-
-
-// デバッグ用グリッド
-const grid = new THREE.GridHelper(
-    20,
-    20
-);
-
-scene.add(grid);
-
-
-// デバッグ用軸
-const axes = new THREE.AxesHelper(
-    5
-);
-
-scene.add(axes);
-
-
-// 車モデル
 let car = null;
 
 const loader = new GLTFLoader();
 
-
-console.log("before glb load");
-
+console.log("before loader.load");
 
 loader.load(
 
-    "models/cap.glb",
+    "./models/cap.glb",
 
+    (gltf) => {
 
-    function (gltf) {
-
-        console.log("GLB LOAD SUCCESS");
-
+        console.log("SUCCESS");
 
         car = gltf.scene;
 
-
-        // Console操作用
-        window.car = car;
-
-
-        console.log(
-            "car object:",
-            car
-        );
-
-
-        // サイズ調整
-        car.scale.set(
-            0.01,
-            0.01,
-            0.01
-        );
-
-
-        car.position.set(
-            0,
-            0,
-            0
-        );
-
-
         scene.add(car);
 
+        console.log(car);
 
-        // サイズ確認
-        const box = new THREE.Box3()
-            .setFromObject(car);
+    },
 
-
-        const size = box.getSize(
-            new THREE.Vector3()
-        );
-
-
-        const center = box.getCenter(
-            new THREE.Vector3()
-        );
-
+    (xhr) => {
 
         console.log(
-            "car size:",
-            size
-        );
-
-
-        console.log(
-            "car center:",
-            center
-        );
-
-
-        camera.lookAt(
-            center
+            `progress ${xhr.loaded}/${xhr.total}`
         );
 
     },
 
+    (error) => {
 
-    function (xhr) {
-
-        console.log(
-            "GLB loading:",
-            xhr.loaded,
-            "/",
-            xhr.total
-        );
-
-    },
-
-
-    function (error) {
-
-        console.error(
-            "GLB LOAD ERROR:",
-            error
-        );
+        console.error("ERROR");
+        console.error(error);
 
     }
 
 );
 
-
-
-// アニメーション
 function animate() {
 
-    requestAnimationFrame(
-        animate
-    );
-
+    requestAnimationFrame(animate);
 
     if (car) {
 
-        // デバッグ後に有効化
-        // car.rotation.y += 0.01;
+        car.rotation.y += 0.01;
 
     }
 
-
-    renderer.render(
-        scene,
-        camera
-    );
+    renderer.render(scene, camera);
 
 }
 
-
 animate();
 
+window.addEventListener("resize", () => {
 
-// リサイズ対応
-window.addEventListener(
-    "resize",
-    () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 
-        camera.aspect =
-            window.innerWidth /
-            window.innerHeight;
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
 
-
-        camera.updateProjectionMatrix();
-
-
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
-
-    }
-);
+});

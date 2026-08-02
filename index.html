@@ -1,23 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
+
 <head>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>PocketGarage</title>
+
+    <!-- favicon 404対策 -->
+    <link rel="icon" href="data:,">
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+        }
+    }
+    </script>
+
 </head>
+
 <body>
-<h1>Welcome to PocketGarage</h1>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
-  }
-}
-</script>
+    <h1>Welcome to PocketGarage</h1>
 
-<script type="module" src="app.js"></script>
+    <script type="module" src="./app.js"></script>
+
 </body>
+
 </html>
