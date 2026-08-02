@@ -10,7 +10,7 @@ console.log("Three.js revision:", THREE.REVISION);
 const scene = new THREE.Scene();
 
 scene.background = new THREE.Color(
-    0x303030
+    0x505050
 );
 
 
@@ -39,7 +39,7 @@ window.camera = camera;
 
 // レンダラー
 const renderer = new THREE.WebGLRenderer({
-    antialias: true
+    antialias:true
 });
 
 renderer.setSize(
@@ -79,22 +79,20 @@ window.controls = controls;
 
 
 // --------------------
-// 背景・地面
+// 地面
 // --------------------
 
-// 地面
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(
         20,
         20
     ),
     new THREE.MeshStandardMaterial({
-        color: 0x202020
+        color:0x303030
     })
 );
 
-floor.rotation.x = -Math.PI / 2;
-floor.position.y = 0;
+floor.rotation.x = -Math.PI/2;
 
 floor.receiveShadow = true;
 
@@ -103,15 +101,15 @@ scene.add(
 );
 
 
+
 // --------------------
 // ライト
 // --------------------
 
-// 環境光
 scene.add(
     new THREE.AmbientLight(
         0xffffff,
-        1.5
+        2
     )
 );
 
@@ -119,7 +117,7 @@ scene.add(
 // カメラ固定ライト
 const cameraLight = new THREE.DirectionalLight(
     0xffffff,
-    2.5
+    3
 );
 
 cameraLight.position.set(
@@ -130,8 +128,6 @@ cameraLight.position.set(
 
 cameraLight.castShadow = true;
 
-
-// カメラの子にする
 camera.add(
     cameraLight
 );
@@ -141,10 +137,10 @@ scene.add(
 );
 
 
-// 補助ライト（弱い固定光）
+// 補助ライト
 const fillLight = new THREE.DirectionalLight(
     0xffffff,
-    0.5
+    0.8
 );
 
 fillLight.position.set(
@@ -156,6 +152,7 @@ fillLight.position.set(
 scene.add(
     fillLight
 );
+
 
 
 // --------------------
@@ -179,34 +176,38 @@ window.tyreLR = null;
 window.tyreRR = null;
 
 
+
+// 基準値保存
+let base = {
+
+    LF:null,
+    RF:null,
+    LR:null,
+    RR:null
+
+};
+
+
+
 const loader = new GLTFLoader();
-
-
-console.log(
-    "before loader.load"
-);
 
 
 loader.load(
 
     "./models/cap.glb",
 
-    (gltf) => {
+    (gltf)=>{
 
-        console.log(
-            "SUCCESS"
-        );
+
+        console.log("SUCCESS");
 
 
         car = gltf.scene;
 
-
-        scene.add(
-            car
-        );
-
+        scene.add(car);
 
         window.car = car;
+
 
 
         car.traverse(
@@ -217,9 +218,10 @@ loader.load(
                     child.type
                 );
 
+
                 if(child.isMesh){
 
-                    child.castShadow = true;
+                    child.castShadow=true;
 
                 }
 
@@ -227,27 +229,50 @@ loader.load(
         );
 
 
+
         tyreLF = car.getObjectByName(
             "TYRE_LF"
         );
+
 
         tyreRF = car.getObjectByName(
             "TYRE_RF"
         );
 
+
         tyreLR = car.getObjectByName(
             "TYRE_LR"
         );
+
 
         tyreRR = car.getObjectByName(
             "TYRE_RR"
         );
 
 
+
         window.tyreLF = tyreLF;
         window.tyreRF = tyreRF;
         window.tyreLR = tyreLR;
         window.tyreRR = tyreRR;
+
+
+
+        base.LF = tyreLF.position.clone();
+        base.RF = tyreRF.position.clone();
+        base.LR = tyreLR.position.clone();
+        base.RR = tyreRR.position.clone();
+
+
+
+        console.log(
+            "TYRES",
+            tyreLF,
+            tyreRF,
+            tyreLR,
+            tyreRR
+        );
+
 
 
         const box = new THREE.Box3()
@@ -259,31 +284,19 @@ loader.load(
         );
 
 
-        controls.target.copy(
-            center
-        );
+        controls.target.copy(center);
 
         controls.update();
 
 
-        console.log(
-            "TYRES:",
-            tyreLF,
-            tyreRF,
-            tyreLR,
-            tyreRR
-        );
+
+        createUI();
+
 
     },
 
 
-    (xhr)=>{
-
-        console.log(
-            `progress ${xhr.loaded}/${xhr.total}`
-        );
-
-    },
+    undefined,
 
 
     (error)=>{
@@ -296,11 +309,235 @@ loader.load(
     }
 
 );
+// --------------------
+// UI
+// --------------------
+
+function createUI(){
+
+
+    const panel = document.createElement(
+        "div"
+    );
+
+
+    panel.style.position="fixed";
+    panel.style.right="10px";
+    panel.style.top="10px";
+    panel.style.padding="10px";
+    panel.style.background="rgba(0,0,0,0.5)";
+    panel.style.color="white";
+    panel.style.fontFamily="sans-serif";
+    panel.style.fontSize="14px";
+
+
+    panel.innerHTML=`
+
+    <div>
+    Front Track
+    <input id="frontTrack"
+    type="range"
+    min="0"
+    max="0.5"
+    step="0.01"
+    value="0">
+    </div>
+
+
+    <div>
+    Rear Track
+    <input id="rearTrack"
+    type="range"
+    min="0"
+    max="0.5"
+    step="0.01"
+    value="0">
+    </div>
+
+
+    <div>
+    Front Camber
+    <input id="frontCamber"
+    type="range"
+    min="-0.5"
+    max="0.5"
+    step="0.01"
+    value="0">
+    </div>
+
+
+    <div>
+    Rear Camber
+    <input id="rearCamber"
+    type="range"
+    min="-0.5"
+    max="0.5"
+    step="0.01"
+    value="0">
+    </div>
+
+
+    <div>
+    Ride Height
+    <input id="rideHeight"
+    type="range"
+    min="-0.2"
+    max="0.2"
+    step="0.005"
+    value="0">
+    </div>
+
+    `;
+
+
+    document.body.appendChild(
+        panel
+    );
 
 
 
-// アニメーション
+    // --------------------
+    // トレッド幅
+    // --------------------
+
+
+    document.getElementById(
+        "frontTrack"
+    ).oninput=(e)=>{
+
+
+        let v = Number(
+            e.target.value
+        );
+
+
+        tyreLF.position.x =
+            base.LF.x + v;
+
+
+        tyreRF.position.x =
+            base.RF.x - v;
+
+
+    };
+
+
+
+    document.getElementById(
+        "rearTrack"
+    ).oninput=(e)=>{
+
+
+        let v = Number(
+            e.target.value
+        );
+
+
+        tyreLR.position.x =
+            base.LR.x + v;
+
+
+        tyreRR.position.x =
+            base.RR.x - v;
+
+
+    };
+
+
+
+    // --------------------
+    // キャンバー
+    // --------------------
+
+
+    document.getElementById(
+        "frontCamber"
+    ).oninput=(e)=>{
+
+
+        let v = Number(
+            e.target.value
+        );
+
+
+        tyreLF.rotation.z =
+            v;
+
+
+        tyreRF.rotation.z =
+            -v;
+
+
+    };
+
+
+
+    document.getElementById(
+        "rearCamber"
+    ).oninput=(e)=>{
+
+
+        let v = Number(
+            e.target.value
+        );
+
+
+        tyreLR.rotation.z =
+            v;
+
+
+        tyreRR.rotation.z =
+            -v;
+
+
+    };
+
+
+
+    // --------------------
+    // 車高
+    // --------------------
+
+
+    document.getElementById(
+        "rideHeight"
+    ).oninput=(e)=>{
+
+
+        let v = Number(
+            e.target.value
+        );
+
+
+        tyreLF.position.y =
+            base.LF.y + v;
+
+
+        tyreRF.position.y =
+            base.RF.y + v;
+
+
+        tyreLR.position.y =
+            base.LR.y + v;
+
+
+        tyreRR.position.y =
+            base.RR.y + v;
+
+
+    };
+
+
+}
+
+
+
+// --------------------
+// Animation
+// --------------------
+
 function animate(){
+
 
     requestAnimationFrame(
         animate
@@ -322,23 +559,28 @@ animate();
 
 
 
-// リサイズ
+// --------------------
+// Resize
+// --------------------
+
 window.addEventListener(
-    "resize",
-    ()=>{
-
-        camera.aspect =
-            window.innerWidth /
-            window.innerHeight;
+"resize",
+()=>{
 
 
-        camera.updateProjectionMatrix();
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
 
 
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
+    camera.updateProjectionMatrix();
 
-    }
-);
+
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+
+});
