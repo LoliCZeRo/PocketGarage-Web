@@ -18,31 +18,85 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 camera.position.set(0, 2, 5);
+camera.lookAt(0, 0, 0);
+
+window.camera = camera;
+
 
 // レンダラー
 const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
 
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
+
 document.body.appendChild(renderer.domElement);
 
-// ライト
-scene.add(new THREE.AmbientLight(0xffffff, 2));
 
-const light = new THREE.DirectionalLight(0xffffff, 3);
-light.position.set(5, 5, 5);
+// ライト
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        2
+    )
+);
+
+const light = new THREE.DirectionalLight(
+    0xffffff,
+    3
+);
+
+light.position.set(
+    5,
+    5,
+    5
+);
+
 scene.add(light);
 
-// デバッグ表示
-scene.add(new THREE.GridHelper(10, 10));
-scene.add(new THREE.AxesHelper(5));
 
+// デバッグ表示
+scene.add(
+    new THREE.GridHelper(
+        10,
+        10
+    )
+);
+
+scene.add(
+    new THREE.AxesHelper(
+        5
+    )
+);
+
+
+// 車
 let car = null;
+
+window.car = null;
+
+
+// タイヤ
+let tyreLF = null;
+let tyreRF = null;
+let tyreLR = null;
+let tyreRR = null;
+
+
+// Console用
+window.tyreLF = null;
+window.tyreRF = null;
+window.tyreLR = null;
+window.tyreRR = null;
+
 
 const loader = new GLTFLoader();
 
 console.log("before loader.load");
+
 
 loader.load(
 
@@ -52,13 +106,56 @@ loader.load(
 
         console.log("SUCCESS");
 
+
         car = gltf.scene;
 
         scene.add(car);
 
-        console.log(car);
+
+        window.car = car;
+
+
+        console.log(
+            "car:",
+            car
+        );
+
+
+        // オブジェクト一覧確認
+        car.traverse((child) => {
+
+            console.log(
+                child.name,
+                child.type
+            );
+
+        });
+
+
+        // タイヤ取得
+        tyreLF = car.getObjectByName("TYRE_LF");
+        tyreRF = car.getObjectByName("TYRE_RF");
+        tyreLR = car.getObjectByName("TYRE_LR");
+        tyreRR = car.getObjectByName("TYRE_RR");
+
+
+        // Console操作用
+        window.tyreLF = tyreLF;
+        window.tyreRF = tyreRF;
+        window.tyreLR = tyreLR;
+        window.tyreRR = tyreRR;
+
+
+        console.log(
+            "TYRES:",
+            tyreLF,
+            tyreRF,
+            tyreLR,
+            tyreRR
+        );
 
     },
+
 
     (xhr) => {
 
@@ -68,18 +165,27 @@ loader.load(
 
     },
 
+
     (error) => {
 
-        console.error("ERROR");
+        console.error(
+            "ERROR"
+        );
+
         console.error(error);
 
     }
 
 );
 
+
+
 function animate() {
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
+
 
     if (car) {
 
@@ -87,20 +193,35 @@ function animate() {
 
     }
 
-    renderer.render(scene, camera);
+
+    renderer.render(
+        scene,
+        camera
+    );
 
 }
 
+
 animate();
 
-window.addEventListener("resize", () => {
 
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
 
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
+window.addEventListener(
+    "resize",
+    () => {
 
-});
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
+);
