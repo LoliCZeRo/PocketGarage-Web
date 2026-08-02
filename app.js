@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
 console.log("app.js start");
-// Three.jsの基本的なセットアップ
+
+
+// シーン
 const scene = new THREE.Scene();
 
-// 背景色（真っ黒回避）
 scene.background = new THREE.Color(0x202020);
 
-// カメラの設定
+
+// カメラ
 const camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -15,9 +18,15 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.set(0, 2, 10);
+camera.position.set(0, 3, 15);
+camera.lookAt(0, 0, 0);
 
-// レンダラーの設定
+
+// Console操作用
+window.camera = camera;
+
+
+// レンダラー
 const renderer = new THREE.WebGLRenderer({
     antialias: true
 });
@@ -42,16 +51,33 @@ scene.add(ambientLight);
 // 指向性ライト
 const directionalLight = new THREE.DirectionalLight(
     0xffffff,
-    2
+    3
 );
 
 directionalLight.position.set(
     5,
-    5,
+    10,
     5
 );
 
 scene.add(directionalLight);
+
+
+// デバッグ用グリッド
+const grid = new THREE.GridHelper(
+    20,
+    20
+);
+
+scene.add(grid);
+
+
+// デバッグ用軸
+const axes = new THREE.AxesHelper(
+    5
+);
+
+scene.add(axes);
 
 
 // 車モデル
@@ -59,14 +85,24 @@ let car = null;
 
 const loader = new GLTFLoader();
 
+
 loader.load(
     "models/cap.glb",
 
+
     function (gltf) {
+
+        console.log("GLB LOAD SUCCESS");
+
 
         car = gltf.scene;
 
-        console.log("car loaded:", car);
+
+        // Console操作用
+        window.car = car;
+
+
+        console.log("car object:", car);
 
 
         // サイズ調整
@@ -77,7 +113,7 @@ loader.load(
         );
 
 
-        // 位置調整
+        // 仮配置
         car.position.set(
             0,
             0,
@@ -88,44 +124,76 @@ loader.load(
         scene.add(car);
 
 
+
         // サイズ確認
-        const box = new THREE.Box3().setFromObject(car);
+        const box = new THREE.Box3()
+            .setFromObject(car);
+
 
         const size = box.getSize(
             new THREE.Vector3()
         );
 
-        console.log("car size:", size);
+
+        const center = box.getCenter(
+            new THREE.Vector3()
+        );
+
+
+        console.log(
+            "car size:",
+            size
+        );
+
+
+        console.log(
+            "car center:",
+            center
+        );
+
 
     },
+
 
     function (progress) {
+
         console.log(
             "loading:",
-            progress
+            progress.loaded,
+            "/",
+            progress.total
         );
+
     },
 
+
     function (error) {
+
         console.error(
-            "GLB load error:",
+            "GLB LOAD ERROR:",
             error
         );
+
     }
+
 );
 
 
-// アニメーションループ
+
+// アニメーション
 function animate() {
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(
+        animate
+    );
 
 
+    // デバッグ中は自動回転OFF
+    /*
     if (car) {
-
         car.rotation.y += 0.01;
-
     }
+    */
 
 
     renderer.render(
@@ -139,7 +207,8 @@ function animate() {
 animate();
 
 
-// 画面サイズ変更対応
+
+// リサイズ対応
 window.addEventListener(
     "resize",
     () => {
@@ -148,7 +217,9 @@ window.addEventListener(
             window.innerWidth /
             window.innerHeight;
 
+
         camera.updateProjectionMatrix();
+
 
         renderer.setSize(
             window.innerWidth,
