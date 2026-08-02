@@ -89,89 +89,104 @@ const loader = new GLTFLoader();
 console.log("before glb load");
 
 
-// GLB読み込み
-loader.loadAsync(
-    "models/cap.glb"
-)
-.then((gltf) => {
+loader.load(
 
-    console.log("GLB LOAD SUCCESS");
+    "models/cap.glb",
 
 
-    car = gltf.scene;
+    function (gltf) {
+
+        console.log("GLB LOAD SUCCESS");
 
 
-    // Console操作用
-    window.car = car;
+        car = gltf.scene;
 
 
-    console.log(
-        "car object:",
-        car
-    );
+        // Console操作用
+        window.car = car;
 
 
-    // サイズ調整
-    car.scale.set(
-        0.01,
-        0.01,
-        0.01
-    );
+        console.log(
+            "car object:",
+            car
+        );
 
 
-    // 仮配置
-    car.position.set(
-        0,
-        0,
-        0
-    );
+        // サイズ調整
+        car.scale.set(
+            0.01,
+            0.01,
+            0.01
+        );
 
 
-    scene.add(car);
+        car.position.set(
+            0,
+            0,
+            0
+        );
 
 
-    // サイズ確認
-    const box = new THREE.Box3()
-        .setFromObject(car);
+        scene.add(car);
 
 
-    const size = box.getSize(
-        new THREE.Vector3()
-    );
+        // サイズ確認
+        const box = new THREE.Box3()
+            .setFromObject(car);
 
 
-    const center = box.getCenter(
-        new THREE.Vector3()
-    );
+        const size = box.getSize(
+            new THREE.Vector3()
+        );
 
 
-    console.log(
-        "car size:",
-        size
-    );
+        const center = box.getCenter(
+            new THREE.Vector3()
+        );
 
 
-    console.log(
-        "car center:",
-        center
-    );
+        console.log(
+            "car size:",
+            size
+        );
 
 
-    // カメラをモデル中心へ向ける
-    camera.lookAt(
-        center
-    );
+        console.log(
+            "car center:",
+            center
+        );
 
 
-})
-.catch((error) => {
+        camera.lookAt(
+            center
+        );
 
-    console.error(
-        "GLB LOAD ERROR:",
-        error
-    );
+    },
 
-});
+
+    function (xhr) {
+
+        console.log(
+            "GLB loading:",
+            xhr.loaded,
+            "/",
+            xhr.total
+        );
+
+    },
+
+
+    function (error) {
+
+        console.error(
+            "GLB LOAD ERROR:",
+            error
+        );
+
+    }
+
+);
+
 
 
 // アニメーション
@@ -182,12 +197,12 @@ function animate() {
     );
 
 
-    // デバッグ中は自動回転OFF
-    /*
     if (car) {
-        car.rotation.y += 0.01;
+
+        // デバッグ後に有効化
+        // car.rotation.y += 0.01;
+
     }
-    */
 
 
     renderer.render(
