@@ -8,6 +8,8 @@ export const state = {
 
     controls:null,
 
+    car:null,
+
 
     parts:{
 
