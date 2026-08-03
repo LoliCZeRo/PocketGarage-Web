@@ -7,12 +7,10 @@ import {
 
 export function initScene(){
 
-
-    console.log(
-        "initScene"
-    );
+    console.log("initScene");
 
 
+    // Scene
     state.scene =
         new THREE.Scene();
 
@@ -24,6 +22,7 @@ export function initScene(){
 
 
 
+    // Camera
     state.camera =
         new THREE.PerspectiveCamera(
 
@@ -37,7 +36,6 @@ export function initScene(){
             1000
 
         );
-
 
 
     state.camera.position.set(
@@ -59,13 +57,13 @@ export function initScene(){
 
 
 
+    // Renderer
     state.renderer =
         new THREE.WebGLRenderer({
 
             antialias:true
 
         });
-
 
 
     state.renderer.setSize(
@@ -75,7 +73,6 @@ export function initScene(){
         window.innerHeight
 
     );
-
 
 
     state.renderer.shadowMap.enabled =
