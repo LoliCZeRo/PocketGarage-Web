@@ -1,3 +1,5 @@
+console.log("APP.JS LOAD");
+
 import { initScene } from "./js/scene.js";
 import { initLights } from "./js/lighting.js";
 import { initFloor } from "./js/floor.js";
@@ -40,4 +42,8 @@ async function main(){
 }
 
 
+console.log("before main");
+
 main();
+
+console.log("after main");
