@@ -1,99 +1,49 @@
 export const state = {
 
-    scene:null,
+    scene: null,
+    camera: null,
+    renderer: null,
+    controls: null,
 
-    camera:null,
+    car: null,
 
-    renderer:null,
+    parts: {
 
-    controls:null,
+        body: null,
 
-    car:null,
-
-
-    parts:{
-
-        body:null,
-
-        tyre:{
-
-            LF:null,
-            RF:null,
-            LR:null,
-            RR:null
-
+        tyre: {
+            LF: null,
+            RF: null,
+            LR: null,
+            RR: null
         }
 
     },
 
+    base: {
 
-    base:{
+        position: {},
 
-        position:{},
-
-        rotation:{}
+        rotation: {}
 
     },
 
+    setup: {
 
-    setup:{
+        frontTrack: 0,
+        rearTrack: 0,
 
-        frontTrack:0,
-        rearTrack:0,
+        frontCamber: 0,
+        rearCamber: 0,
 
-        frontCamber:0,
-        rearCamber:0,
+        frontRideHeight: 0,
+        rearRideHeight: 0,
 
-        frontRideHeight:0,
-        rearRideHeight:0,
-
-        steering:0
+        steering: 0
 
     }
 
 };
 
-export let camera = null;
-
-export let renderer = null;
-
-export let controls = null;
-
-
-export const parts = {
-
-    body:null,
-
-    tyre:{
-        LF:null,
-        RF:null,
-        LR:null,
-        RR:null
-    }
-
-};
-
-
-export const base = {
-
-    position:{},
-
-    rotation:{}
-
-};
-
-
-export const setup = {
-
-    frontTrack:0,
-    rearTrack:0,
-
-    frontCamber:0,
-    rearCamber:0,
-
-    frontRideHeight:0,
-    rearRideHeight:0,
-
-    steering:0
-
-};
+// 開発用
+window.state = state;
