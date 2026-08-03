@@ -30,6 +30,39 @@ PocketGarage-Web
 ## 基本方針
 Three.jsによる車両カスタマイズガレージ。
 
+## Rule
+
+ui.jsはstate.setupのみ変更する。
+
+Three.jsオブジェクトの更新は
+各機能モジュールが担当する。
+
+例：
+UI
+↓
+state.setup.frontTrack = 0.03
+↓
+suspension.js
+↓
+タイヤ位置更新
+
+## Module Flow
+
+app.js
+ ↓
+scene.js
+ ↓
+lighting.js
+ ↓
+floor.js
+ ↓
+controls.js
+ ↓
+loader.js
+ ↓
+ui.js
+ ↓
+animation.js
 
 ---
 
@@ -114,3 +147,43 @@ Three.jsによる車両カスタマイズガレージ。
 - タイヤ回転
 - アニメーション
 
+### floor.js
+背景・地面生成。
+
+役割：
+- 地面生成
+- 背景色設定
+
+### resize.js
+画面サイズ変更対応。
+
+役割：
+- Camera更新
+- Rendererサイズ更新
+
+## Shared State
+
+state
+├── scene
+├── camera
+├── renderer
+├── controls
+├── car
+├── parts
+│   ├── body
+│   └── tyre
+│       ├── LF
+│       ├── RF
+│       ├── LR
+│       └── RR
+├── base
+│   ├── position
+│   └── rotation
+└── setup
+    ├── frontTrack
+    ├── rearTrack
+    ├── frontCamber
+    ├── rearCamber
+    ├── frontRideHeight
+    ├── rearRideHeight
+    └── steering

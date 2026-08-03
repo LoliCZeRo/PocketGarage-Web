@@ -5,6 +5,17 @@ import {
 } from "./globals.js";
 
 
+import {
+    initSuspension
+} from "./suspension.js";
+
+
+import {
+    initSteering
+} from "./steering.js";
+
+
+
 export function loadCar(){
 
     console.log(
@@ -23,7 +34,9 @@ export function loadCar(){
 
             loader.load(
 
+
                 "./models/cap.glb",
+
 
 
                 (gltf)=>{
@@ -34,8 +47,10 @@ export function loadCar(){
                     );
 
 
+
                     const car =
                         gltf.scene;
+
 
 
                     state.scene.add(
@@ -50,13 +65,17 @@ export function loadCar(){
 
 
                     car.traverse(
+
                         (child)=>{
 
 
                             console.log(
+
                                 child.name,
                                 child.type
+
                             );
+
 
 
                             if(
@@ -70,111 +89,213 @@ export function loadCar(){
 
 
                         }
+
                     );
 
 
 
-                    // 車体
+
+                    // --------------------
+                    // Body
+                    // --------------------
+
+
                     state.parts.body =
+
                         car.getObjectByName(
+
                             "body"
+
                         );
 
 
 
-                    // タイヤ
+
+
+                    // --------------------
+                    // Tyres
+                    // --------------------
+
+
                     state.parts.tyre.LF =
+
                         car.getObjectByName(
+
                             "TYRE_LF"
+
                         );
+
 
 
                     state.parts.tyre.RF =
+
                         car.getObjectByName(
+
                             "TYRE_RF"
+
                         );
+
 
 
                     state.parts.tyre.LR =
+
                         car.getObjectByName(
+
                             "TYRE_LR"
+
                         );
+
 
 
                     state.parts.tyre.RR =
+
                         car.getObjectByName(
+
                             "TYRE_RR"
+
                         );
+
+
 
 
 
                     console.log(
+
                         "PARTS",
+
                         state.parts
+
                     );
 
 
 
-                    // 基準値保存
+
+
+                    // --------------------
+                    // Base Position
+                    // --------------------
+
 
                     state.base.position = {
 
+
                         LF:
+
                         state.parts.tyre.LF.position.clone(),
 
+
+
                         RF:
+
                         state.parts.tyre.RF.position.clone(),
 
+
+
                         LR:
+
                         state.parts.tyre.LR.position.clone(),
 
+
+
                         RR:
+
                         state.parts.tyre.RR.position.clone()
+
 
                     };
 
+
+
+
+
+                    // --------------------
+                    // Base Rotation
+                    // --------------------
 
 
                     state.base.rotation = {
 
+
+
                         LF:
+
                         state.parts.tyre.LF.rotation.clone(),
 
+
+
                         RF:
+
                         state.parts.tyre.RF.rotation.clone(),
 
+
+
                         LR:
+
                         state.parts.tyre.LR.rotation.clone(),
 
+
+
                         RR:
+
                         state.parts.tyre.RR.rotation.clone()
 
+
                     };
+
+
+
+
+
+
+                    // --------------------
+                    // Initialize Systems
+                    // --------------------
+
+
+                    initSuspension();
+
+
+                    initSteering();
+
+
 
 
 
                     resolve();
 
 
+
                 },
+
 
 
                 undefined,
 
 
+
                 (error)=>{
 
+
                     console.error(
+
                         "GLB ERROR",
+
                         error
+
                     );
+
 
 
                     reject(error);
 
+
+
                 }
 
+
+
             );
+
 
 
         }
